@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Тема подстраивается под устройство (светлая/тёмная). -->
+  <meta name="color-scheme" content="light dark" />
+  <!-- Просим Dark Reader не вмешиваться: у сайта есть собственная тёмная тема. -->
+  <meta name="darkreader-lock" />
+
+  <title>Как добраться — Наталия</title>
+
+  <!-- Применяем сохранённый выбор темы сразу, до отрисовки, чтобы не мигало.
+       Если выбора нет — атрибут не ставим, и работает системная тема. -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- ================================================================== -->
+  <!--  КАК ПОЛЬЗОВАТЬСЯ: замените всё, что в фигурных скобках {{...}}      -->
+  <!--  на свои реальные данные. Больше ничего трогать не нужно.           -->
+  <!-- ================================================================== -->
+
+  <style>
+    :root {
+      color-scheme: light dark;   /* нативная тёмная тема, подстраивается под устройство */
+
+      /* ---- Светлая тема (по умолчанию) ---- */
+      --bg: #fbf6f2;
+      --card: #ffffff;
+      --accent: #c98a86;      /* тёплый пудрово-розовый */
+      --accent-dark: #a9615d;
+      --text: #3a2f2c;
+      --muted: #8c7c76;
+      --line: #efe3db;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(140, 90, 80, 0.08);
+
+      /* Фон под иконками-кружочками и заглушками (в светлой теме) */
+      --soft: #fdf3ef;
+    }
+
+    /* Значения тёмной темы (используются и для авто-, и для ручного выбора) */
+    :root[data-theme="dark"] {
+      --bg: #1c1715;         /* тёплый тёмно-коричневый, а не чёрный */
+      --card: #2a2320;
+      --accent: #d9a09b;     /* пудрово-розовый чуть светлее для контраста */
+      --accent-dark: #e7b8b3;
+      --text: #f0e8e4;
+      --muted: #b3a29b;
+      --line: #3a302c;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --soft: #352a26;       /* фон под иконками и заглушками в тёмной теме */
+    }
+
+    /* Автоматически тёмная — только если пользователь ещё НЕ выбрал тему вручную */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        --bg: #1c1715;
+        --card: #2a2320;
+        --accent: #d9a09b;
+        --accent-dark: #e7b8b3;
+        --text: #f0e8e4;
+        --muted: #b3a29b;
+        --line: #3a302c;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --soft: #352a26;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    /* ---------- Переключатель темы ---------- */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px 9px 12px;
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text);
+      border: 1.5px solid var(--line);
+      box-shadow: var(--shadow);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .theme-toggle:hover { border-color: var(--accent); }
+    .theme-toggle .tt-ico { font-size: 16px; line-height: 1; }
+    /* Показываем нужную иконку/подпись в зависимости от активной темы */
+    .theme-toggle .tt-dark,
+    .theme-toggle .tt-light { display: none; }
+    :root[data-theme="dark"] .theme-toggle .tt-dark { display: inline; }
+    :root[data-theme="light"] .theme-toggle .tt-light { display: inline; }
+    /* Когда тема не выбрана вручную — ориентируемся на систему */
+    :root:not([data-theme]) .theme-toggle .tt-light { display: inline; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) .theme-toggle .tt-light { display: none; }
+      :root:not([data-theme]) .theme-toggle .tt-dark { display: inline; }
+    }
+
+    /* ---------- Шапка ---------- */
+    header {
+      text-align: center;
+      padding: 22px 0 30px;
+    }
+    header .eyebrow {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      margin-bottom: 8px;
+    }
+    header h1 {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    header p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 16px;
+    }
+
+    /* ---------- Карточка ---------- */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
+      margin-bottom: 18px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h2 .ico { font-size: 20px; }
+
+    .address {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .address-note {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+
+    /* ---------- Кнопки ---------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px 18px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background .2s, transform .1s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--accent-dark); }
+    .btn:active { transform: scale(.99); }
+    .btn.secondary {
+      background: var(--card);
+      color: var(--accent-dark);
+      border: 1.5px solid var(--line);
+    }
+    .btn.secondary:hover { background: var(--soft); }
+    .btn + .btn { margin-top: 10px; }
+
+    /* ---------- Карта ---------- */
+    .map {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      line-height: 0;
+    }
+    .map iframe { width: 100%; height: 300px; border: 0; }
+
+    /* ---------- Список маршрута ---------- */
+    .route h3 {
+      font-size: 15px;
+      color: var(--accent-dark);
+      margin: 16px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .route h3:first-child { margin-top: 0; }
+    .route ul { list-style: none; }
+    .route li {
+      position: relative;
+      padding-left: 26px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .route li::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ---------- Фото ориентиров ---------- */
+    .photos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .photos figure {
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--soft);
+    }
+    .photos img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+    .photos figcaption {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 10px;
+    }
+    .photos-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 15px;
+      padding: 26px 16px;
+      background: var(--soft);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+    }
+
+    /* ---------- Контакты ---------- */
+    .contacts a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 4px;
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      font-size: 16px;
+    }
+    .contacts a:last-child { border-bottom: none; }
+    .contacts .c-ico {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .contacts .c-label { color: var(--muted); font-size: 13px; }
+    .contacts .c-value { font-weight: 600; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ============ -->
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
+    <span class="tt-ico tt-light">🌙</span><span class="tt-light">Тёмная</span>
+    <span class="tt-ico tt-dark">☀️</span><span class="tt-dark">Светлая</span>
+  </button>
+
+  <div class="wrap">
+
+    <!-- ============ ШАПКА ============ -->
+    <header>
+      <div class="eyebrow">Салон красоты · частный приём</div>
+      <h1>Наталия</h1>
+      <p>Здесь всё, чтобы вам было легко до меня добраться 💛</p>
+    </header>
+
+    <!-- ============ АДРЕС + МАРШРУТ ============ -->
+    <div class="card">
+      <h2><span class="ico">📍</span> Адрес</h2>
+      <div class="address">Costa Blanca, 135</div>
+      <div class="address-note">Квартира 11A · позвоните в домофон, и я вас встречу</div>
+
+      <a class="btn"
+         href="https://www.google.com/maps/dir/?api=1&destination=Costa+Blanca+135"
+         target="_blank" rel="noopener">
+        🧭 Построить маршрут
+      </a>
+    </div>
+
+    <!-- ============ КАРТА ============ -->
+    <!-- Карта строится прямо по адресу, отдельный ключ не нужен.
+         Если захотите уточнить точку — поменяйте адрес в ссылке q=... -->
+    <div class="map">
+      <iframe
+        src="https://maps.google.com/maps?q=Costa%20Blanca%20135&z=16&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen></iframe>
+    </div>
+
+    <!-- ============ КАК ДОБРАТЬСЯ ТЕКСТОМ ============ -->
+    <div class="card route">
+      <h2><span class="ico">🚶</span> Как добраться</h2>
+
+      <h3>На общественном транспорте</h3>
+      <ul>
+        <li>Доезжайте до ближайшей остановки рядом с улицей Costa Blanca. Маршрут удобнее всего построить по кнопке выше.</li>
+        <li>От остановки до дома несколько минут пешком. Ищите дом 135.</li>
+        <li>Вход и домофон там где зелёная арка. Нажать "31" и колокольчик.</li>
+        <li>Далее пройти прямо, зайти в подъезд и выбрать лифт который слева, 11 этаж</li>
+      </ul>
+
+      <h3>На машине</h3>
+      <ul>
+        <li>Просто введите адрес в навигатор или нажмите «Построить маршрут», и он приведёт прямо к дому 135.</li>
+        <li>Вдоль улицы обычно есть места для парковки; подъехать можно прямо к входу.</li>
+      </ul>
+
+      <p style="color:var(--muted);font-size:14px;margin-top:14px;">
+        Не нашли вход? Позвоните или напишите мне, подскажу и встречу 💛
+      </p>
+    </div>
+
+    <!-- ============ ФОТО ОРИЕНТИРОВ ============ -->
+    <!-- ЧТОБЫ ДОБАВИТЬ ФОТО:
+         1. Положите файлы рядом с index.html (например, dom.jpg и podezd.jpg).
+         2. Раскомментируйте блок .photos ниже и впишите свои имена файлов.
+         3. Удалите блок-заглушку .photos-empty. -->
+    <div class="card">
+      <h2><span class="ico">📷</span> Как выглядит вход</h2>
+
+      <div class="photos-empty">
+        Фотографии дома и подъезда появятся здесь чуть позже 🌸
+      </div>
+
+      <!--
+      <div class="photos">
+        <figure>
+          <img src="dom.jpg" alt="Дом снаружи" />
+          <figcaption>Дом снаружи</figcaption>
+        </figure>
+        <figure>
+          <img src="podezd.jpg" alt="Подъезд / вход" />
+          <figcaption>Подъезд / вход</figcaption>
+        </figure>
+      </div>
+      -->
+    </div>
+
+    <!-- ============ КОНТАКТЫ ============ -->
+    <div class="card contacts">
+      <h2><span class="ico">💬</span> Если заблудились — напишите</h2>
+
+      <a href="tel:+34691809873">
+        <span class="c-ico">📞</span>
+        <span><span class="c-label">Позвонить</span><br><span class="c-value">+34 691 80 98 73</span></span>
+      </a>
+
+      <a href="https://wa.me/34691809873" target="_blank" rel="noopener">
+        <span class="c-ico">🟢</span>
+        <span><span class="c-label">WhatsApp</span><br><span class="c-value">Написать в WhatsApp</span></span>
+      </a>
+
+      <a href="https://t.me/nataliya007" target="_blank" rel="noopener">
+        <span class="c-ico">✈️</span>
+        <span><span class="c-label">Telegram</span><br><span class="c-value">@nataliya007</span></span>
+      </a>
+    </div>
+
+    <footer>
+      Жду вас в гости ✨
+    </footer>
+
+  </div>
+
+  <!-- ============ ЛОГИКА ПЕРЕКЛЮЧАТЕЛЯ ТЕМЫ ============ -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var btn = document.getElementById('themeToggle');
+
+      // Какая тема сейчас реально показана: явный выбор или системная
+      function currentTheme() {
+        var attr = root.getAttribute('data-theme');
+        if (attr) return attr;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      btn.addEventListener('click', function () {
+        var next = currentTheme() === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>
